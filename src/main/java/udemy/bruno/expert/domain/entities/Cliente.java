@@ -2,9 +2,22 @@ package udemy.bruno.expert.domain.entities;
 
 import java.util.Objects;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "CLIENTE")
 public class Cliente {
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "id_cliente")
 	private Integer id;
+	@Column(length = 70)
 	private String nome;
 
 	public Cliente() {

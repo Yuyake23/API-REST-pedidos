@@ -1,5 +1,7 @@
 package udemy.bruno.expert;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -20,30 +22,16 @@ public class ExpertApplication {
 	public CommandLineRunner init(@Autowired ClienteRepository repository) {
 		return args -> {
 			System.out.println("Salvando clientes");
-			repository.salvar(new Cliente(null, "Douglas"));
-			repository.salvar(new Cliente(null, "Leonardo"));
+			repository.save(new Cliente(null, "Douglas"));
+			repository.save(new Cliente(null, "Leonardo"));
 
 			System.out.println("\nListando clientes");
-			var todosClientes = repository.obterTodos();
+			List<Cliente> todosClientes = repository.findAll();
 			todosClientes.forEach(System.out::println);
 
-			System.out.println("\nAtualizando clientes");
-			todosClientes.forEach(c -> {
-				c.setNome(c.getNome() + " - ATUALIZADO");
-				repository.atualizar(c);
-			});
+			boolean existe = repository.existsByNome("Douglas");
+			System.out.println("Existe cliente com nome Douglas? " + (existe ? "sim" : "não"));
 
-			System.out.println("\nListando clientes com nome %ard%");
-			repository.buscarPorNome("ard").forEach(System.out::println);
-
-			System.out.println("\nDeletando clientes");
-			todosClientes.forEach(repository::deletar);
-
-			todosClientes = repository.obterTodos();
-			if (todosClientes.isEmpty())
-				System.out.println("\nNenhum cliente encontrado");
-			else
-				todosClientes.forEach(System.out::println);
 		};
 	}
 
