@@ -1,12 +1,27 @@
 package udemy.bruno.expert.domain.entities;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Objects;
 
-public class Produto {
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 
+@Entity
+public class Produto implements Serializable {
+	@Serial
+	private static final long serialVersionUID = 1L;
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "id_produto")
 	private Integer id;
 	private String descricao;
+	@Column(name = "preco_unitario")
 	private BigDecimal preco;
 
 	public Produto() {

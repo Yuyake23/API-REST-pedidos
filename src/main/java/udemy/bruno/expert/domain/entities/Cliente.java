@@ -1,17 +1,25 @@
 package udemy.bruno.expert.domain.entities;
 
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "CLIENTE")
-public class Cliente {
+public class Cliente implements Serializable {
+	@Serial
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -19,6 +27,9 @@ public class Cliente {
 	private Integer id;
 	@Column(length = 70)
 	private String nome;
+
+	@OneToMany(mappedBy = "cliente", fetch = FetchType.LAZY)
+	private List<Pedido> pedidos = new ArrayList<>();
 
 	public Cliente() {
 		super();
@@ -44,6 +55,10 @@ public class Cliente {
 
 	public void setNome(String nome) {
 		this.nome = nome;
+	}
+
+	public List<Pedido> getPedidos() {
+		return pedidos;
 	}
 
 	@Override

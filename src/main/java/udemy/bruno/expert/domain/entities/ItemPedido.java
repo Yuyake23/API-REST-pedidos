@@ -1,11 +1,31 @@
 package udemy.bruno.expert.domain.entities;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Objects;
 
-public class ItemPedido {
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
+@Entity
+public class ItemPedido implements Serializable {
+	@Serial
+	private static final long serialVersionUID = 1L;
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "id_item_pedido")
 	private Integer id;
+	@ManyToOne
+	@JoinColumn(name = "id_pedido")
 	private Pedido pedido;
+	@ManyToOne
+	@JoinColumn(name = "id_produto")
 	private Produto produto;
 	private Integer quantidade;
 
