@@ -1,5 +1,7 @@
 package udemy.bruno.expert;
 
+import java.util.Arrays;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -21,8 +23,10 @@ public class ExpertApplication {
 	public CommandLineRunner init(@Autowired ClienteRepository clienteRepository,
 			@Autowired PedidoRepository pedidoRepository) {
 		return args -> {
-			Cliente c1 = new Cliente(null, "Douglas");
-			clienteRepository.save(c1);
+			Cliente c1 = new Cliente(null, "Douglas Vieira");
+			Cliente c2 = new Cliente(null, "Leonardo Silva");
+			Cliente c3 = new Cliente(null, "Joaquim Rezende");
+			clienteRepository.saveAll(Arrays.asList(c1, c2, c3));
 		};
 	}
 

@@ -2,9 +2,10 @@ package udemy.bruno.expert.domain.entities;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -28,8 +29,9 @@ public class Cliente implements Serializable {
 	@Column(length = 70)
 	private String nome;
 
+	@JsonIgnore
 	@OneToMany(mappedBy = "cliente", fetch = FetchType.LAZY)
-	private List<Pedido> pedidos = new ArrayList<>();
+	private Set<Pedido> pedidos;
 
 	public Cliente() {
 		super();
@@ -57,7 +59,7 @@ public class Cliente implements Serializable {
 		this.nome = nome;
 	}
 
-	public List<Pedido> getPedidos() {
+	public Set<Pedido> getPedidos() {
 		return pedidos;
 	}
 
