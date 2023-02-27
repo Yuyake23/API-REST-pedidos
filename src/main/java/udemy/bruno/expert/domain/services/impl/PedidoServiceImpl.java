@@ -14,12 +14,14 @@ import udemy.bruno.expert.domain.entities.Cliente;
 import udemy.bruno.expert.domain.entities.ItemPedido;
 import udemy.bruno.expert.domain.entities.Pedido;
 import udemy.bruno.expert.domain.entities.Produto;
+import udemy.bruno.expert.domain.enums.StatusPedido;
 import udemy.bruno.expert.domain.repositories.ClienteRepository;
 import udemy.bruno.expert.domain.repositories.ItemPedidoRepository;
 import udemy.bruno.expert.domain.repositories.PedidoRepository;
 import udemy.bruno.expert.domain.repositories.ProdutoRepository;
 import udemy.bruno.expert.domain.services.PedidoService;
 import udemy.bruno.expert.domain.services.exceptions.RegraNegocioException;
+import udemy.bruno.expert.exceptions.PedidoNaoEncontradoException;
 import udemy.bruno.expert.rest.dto.ItemPedidoDTO;
 import udemy.bruno.expert.rest.dto.PedidoDTO;
 
@@ -47,7 +49,8 @@ public class PedidoServiceImpl implements PedidoService {
 				.map(ip -> ip.getProduto().getPreco().multiply(new BigDecimal(ip.getQuantidade())))
 				.reduce(BigDecimal.ZERO, BigDecimal::add);
 		pedido.setTotal(total);
-
+		pedido.setStatus(StatusPedido.REALIZADO);
+		
 		pedidoRepository.save(pedido);
 		itemPedidoRepository.saveAll(pedido.getItensPedido());
 		pedido.getItensPedido().forEach(System.out::println);
@@ -77,6 +80,15 @@ public class PedidoServiceImpl implements PedidoService {
 	@Override
 	public Optional<Pedido> obterPedidoCompleto(Integer id) {
 		return pedidoRepository.findByIdFetchItensPedido(id);
+	}
+
+	@Override
+	public void atualizaStatus(Integer id, StatusPedido status) {
+		pedidoRepository.findById(id)
+		.map(p -> {
+			p.setStatus(status);
+			return pedidoRepository.save(p);
+		}).orElseThrow(() -> new PedidoNaoEncontradoException());
 	}
 
 }

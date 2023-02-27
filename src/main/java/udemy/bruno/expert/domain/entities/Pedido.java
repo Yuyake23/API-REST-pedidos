@@ -10,6 +10,8 @@ import java.util.Set;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -20,6 +22,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import udemy.bruno.expert.domain.enums.StatusPedido;
 
 @Entity
 @NoArgsConstructor
@@ -44,6 +47,9 @@ public class Pedido implements Serializable {
 
 	@Column(precision = 20, scale = 2)
 	private BigDecimal total;
+	
+	@Enumerated(EnumType.STRING)
+	private StatusPedido status;
 
 	@OneToMany(mappedBy = "pedido")
 	private Set<ItemPedido> itensPedido = new HashSet<>();

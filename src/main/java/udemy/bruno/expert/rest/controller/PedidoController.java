@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import udemy.bruno.expert.domain.entities.ItemPedido;
 import udemy.bruno.expert.domain.entities.Pedido;
+import udemy.bruno.expert.domain.enums.StatusPedido;
 import udemy.bruno.expert.domain.services.PedidoService;
 import udemy.bruno.expert.rest.dto.ItemPedidoInfoDTO;
 import udemy.bruno.expert.rest.dto.PedidoDTO;
@@ -42,6 +44,13 @@ public class PedidoController {
 		return service.obterPedidoCompleto(id).map(this::convert).orElseThrow(notFound("Produto não encontrado"));
 	}
 
+	@PatchMapping("/{id}")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void updateStatus(@PathVariable Integer id, @RequestBody AtualizacaoStatusPedidoDTO dto) {
+		String novoStatus = dto.getNovoStatus();
+		service.atualizaStatus(id, StatusPedido.valueOf(novoStatus));
+	}
+
 	private PedidoInfoDTO convert(Pedido pedido) {
 		return PedidoInfoDTO.builder()
 				.id(pedido.getId())
@@ -50,19 +59,21 @@ public class PedidoController {
 				.cpf(pedido.getCliente().getCpf())
 				.nomeCliente(pedido.getCliente().getNome())
 				.total(pedido.getTotal())
+				.status(pedido.getStatus().name())
 				.itens(convert(pedido.getItensPedido()))
 				.build();
 	}
 
 	private Set<ItemPedidoInfoDTO> convert(Set<ItemPedido> itens) {
-		if(itens.isEmpty())
+		if (itens.isEmpty())
 			return Collections.emptySet();
-		
-		return itens.stream().map(item -> ItemPedidoInfoDTO
-				.builder()
-				.descricao(item.getProduto().getDescricao())
-				.precoUnitario(item.getProduto().getPreco())
-				.quantidade(item.getQuantidade())
-				.build()).collect(Collectors.toSet());
+
+		return itens.stream()
+				.map(item -> ItemPedidoInfoDTO.builder()
+						.descricao(item.getProduto().getDescricao())
+						.precoUnitario(item.getProduto().getPreco())
+						.quantidade(item.getQuantidade())
+						.build())
+				.collect(Collectors.toSet());
 	}
 }

@@ -19,6 +19,7 @@ public class PedidoInfoDTO {
 	private String nomeCliente;
 	private BigDecimal total;
 	private String dataPedido;
+	private String status;
 	private Set<ItemPedidoInfoDTO> itens;
 
 }
