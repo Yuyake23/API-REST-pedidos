@@ -2,6 +2,7 @@ package udemy.bruno.expert.domain.entities;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -15,9 +16,17 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "CLIENTE")
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class Cliente implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -26,46 +35,22 @@ public class Cliente implements Serializable {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "id_cliente")
 	private Integer id;
+
+	@Column(length = 11)
+	private String cpf;
+
 	@Column(length = 70)
 	private String nome;
 
 	@JsonIgnore
 	@OneToMany(mappedBy = "cliente", fetch = FetchType.LAZY)
-	private Set<Pedido> pedidos;
+	private Set<Pedido> pedidos = new HashSet<>();
 
-	public Cliente() {
-		super();
-	}
-
-	public Cliente(Integer id, String nome) {
+	public Cliente(Integer id, String cpf, String nome) {
 		super();
 		this.id = id;
+		this.cpf = cpf;
 		this.nome = nome;
-	}
-
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	public String getNome() {
-		return nome;
-	}
-
-	public void setNome(String nome) {
-		this.nome = nome;
-	}
-
-	public Set<Pedido> getPedidos() {
-		return pedidos;
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(id);
 	}
 
 	@Override
@@ -81,8 +66,13 @@ public class Cliente implements Serializable {
 	}
 
 	@Override
-	public String toString() {
-		return "Cliente [id=" + id + ", nome=" + nome + "]";
+	public int hashCode() {
+		return Objects.hash(id);
 	}
 
+	@Override
+	public String toString() {
+		return "Cliente [id=" + id + ", cpf=" + cpf + ", nome=" + nome + "]";
+	}
+	
 }

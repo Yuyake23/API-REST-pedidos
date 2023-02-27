@@ -1,11 +1,13 @@
 package udemy.bruno.expert.rest.controller;
 
-import java.net.URI;
+import static udemy.bruno.expert.rest.controller.ResponseStatusExceptionSupplier.notFound;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,9 +15,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import udemy.bruno.expert.domain.entities.Cliente;
 import udemy.bruno.expert.domain.repositories.ClienteRepository;
@@ -28,46 +29,51 @@ public class ClienteController {
 	private ClienteRepository clienteRepository;
 
 	@GetMapping
-	@ResponseBody
-	public ResponseEntity<List<Cliente>> findAll() {
-		return ResponseEntity.ok(clienteRepository.findAll());
+	public List<Cliente> findAll() {
+		return clienteRepository.findAll();
 	}
 
 	@GetMapping("/{id}")
-	@ResponseBody
-	public ResponseEntity<Cliente> findById(@PathVariable Integer id) {
-		return ResponseEntity.of(clienteRepository.findById(id));
+	public Cliente findById(@PathVariable Integer id) {
+		return clienteRepository.findById(id).orElseThrow(notFound("Cliente não encontrado"));
 	}
 
 	@PostMapping
-	@ResponseBody
-	public ResponseEntity<Cliente> save(@RequestBody Cliente cliente) {
-		cliente = clienteRepository.save(cliente);
-		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(cliente.getId())
-				.toUri();
-		return ResponseEntity.created(uri).body(cliente);
+	@ResponseStatus(HttpStatus.CREATED)
+	public Cliente save(@RequestBody Cliente cliente) {
+//		cliente = clienteRepository.save(cliente);
+//		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(cliente.getId())
+//				.toUri();
+//		return ResponseEntity.created(uri).body(cliente);
+		return clienteRepository.save(cliente);
 	}
 
 	@DeleteMapping("/{id}")
-	@ResponseBody
-	public ResponseEntity<Void> delete(@PathVariable Integer id) {
-		try {
-			clienteRepository.deleteById(id);
-			return ResponseEntity.noContent().build();
-		} catch (EmptyResultDataAccessException e) {
-			return ResponseEntity.notFound().build();
-		}
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void delete(@PathVariable Integer id) {
+		Cliente c = clienteRepository.findById(id).orElseThrow(notFound("Cliente não encontrado"));
+		clienteRepository.delete(c);
 	}
 
 	@PutMapping("/{id}")
-	@ResponseBody
-	public ResponseEntity<? super Void> update(@PathVariable Integer id, @RequestBody Cliente clienteAtualizado) {
-		return clienteRepository.findById(id).map(c -> {
-			atualizarDados(c, clienteAtualizado);
-			clienteRepository.save(c);
-			return ResponseEntity.noContent().build();
-		}).orElseGet(() -> ResponseEntity.notFound().build());
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void update(@PathVariable Integer id, @RequestBody Cliente clienteAtualizado) {
+		Cliente c = clienteRepository.findById(id).orElseThrow(notFound("Cliente não encontrado"));
+		atualizarDados(c, clienteAtualizado);
+		clienteRepository.save(c);
+	}
 
+	@GetMapping("/matching")
+	public List<Cliente> findMatching(Cliente cliente) {
+		ExampleMatcher matcher = ExampleMatcher.matching().withIgnoreCase()
+				.withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
+		Example<Cliente> example = Example.of(cliente, matcher);
+		return clienteRepository.findAll(example);
+	}
+	
+	@GetMapping("/sample")
+	public Cliente sample() {
+		return new Cliente();
 	}
 
 	private void atualizarDados(Cliente cliente, Cliente clienteAtualizado) {

@@ -10,8 +10,16 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class Produto implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -20,49 +28,12 @@ public class Produto implements Serializable {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "id_produto")
 	private Integer id;
+
+	@Column(name = "descricao")
 	private String descricao;
+
 	@Column(name = "preco_unitario")
 	private BigDecimal preco;
-
-	public Produto() {
-		super();
-	}
-
-	public Produto(Integer id, String descricao, BigDecimal preco) {
-		super();
-		this.id = id;
-		this.descricao = descricao;
-		this.preco = preco;
-	}
-
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	public String getDescricao() {
-		return descricao;
-	}
-
-	public void setDescricao(String descricao) {
-		this.descricao = descricao;
-	}
-
-	public BigDecimal getPreco() {
-		return preco;
-	}
-
-	public void setPreco(BigDecimal preco) {
-		this.preco = preco;
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(id);
-	}
 
 	@Override
 	public boolean equals(Object obj) {
@@ -74,6 +45,11 @@ public class Produto implements Serializable {
 			return false;
 		Produto other = (Produto) obj;
 		return Objects.equals(id, other.id);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id);
 	}
 
 	@Override

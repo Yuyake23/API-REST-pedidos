@@ -4,6 +4,8 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,8 +13,16 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class ItemPedido implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -21,61 +31,21 @@ public class ItemPedido implements Serializable {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "id_item_pedido")
 	private Integer id;
+
 	@ManyToOne
 	@JoinColumn(name = "id_pedido")
+	@JsonIgnore
 	private Pedido pedido;
+
 	@ManyToOne
 	@JoinColumn(name = "id_produto")
 	private Produto produto;
+
 	private Integer quantidade;
-
-	public ItemPedido() {
-		super();
-	}
-
-	public ItemPedido(Integer id, Pedido pedido, Produto produto, Integer quantidade) {
-		super();
-		this.id = id;
-		this.pedido = pedido;
-		this.produto = produto;
-		this.quantidade = quantidade;
-	}
-
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	public Pedido getPedido() {
-		return pedido;
-	}
-
-	public void setPedido(Pedido pedido) {
-		this.pedido = pedido;
-	}
-
-	public Produto getProduto() {
-		return produto;
-	}
-
-	public void setProduto(Produto produto) {
-		this.produto = produto;
-	}
-
-	public Integer getQuantidade() {
-		return quantidade;
-	}
-
-	public void setQuantidade(Integer quantidade) {
-		this.quantidade = quantidade;
-	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id);
+		return Objects.hash(id, pedido, produto);
 	}
 
 	@Override
@@ -87,13 +57,14 @@ public class ItemPedido implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		ItemPedido other = (ItemPedido) obj;
-		return Objects.equals(id, other.id);
+		return Objects.equals(id, other.id) && Objects.equals(pedido, other.pedido)
+				&& Objects.equals(produto, other.produto);
 	}
 
 	@Override
 	public String toString() {
-		return "ItemPedido [id=" + id + ", pedido=" + pedido + ", produto=" + produto + ", quantidade=" + quantidade
-				+ "]";
+		return "ItemPedido [id=" + id + ", idPedido=" + pedido.getId() + ", descricaoProduto=" + produto.getDescricao()
+				+ ", quantidade=" + quantidade + "]";
 	}
-
+	
 }
